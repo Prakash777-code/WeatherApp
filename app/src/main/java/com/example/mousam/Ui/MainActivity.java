@@ -1,17 +1,26 @@
-package com.example.mousam;
+package com.example.mousam.Ui;
 
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.mousam.Adapter.ForecastAdapter;
+import com.example.mousam.Models.HourlyForecast;
+import com.example.mousam.Models.LocationResponse;
+import com.example.mousam.Models.WeatherResponse;
+import com.example.mousam.R;
+import com.example.mousam.Repository.CityRepository;
+import com.example.mousam.Utils.WeatherIconHelper;
+import com.example.mousam.ViewModels.WeatherViewModel;
+
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {

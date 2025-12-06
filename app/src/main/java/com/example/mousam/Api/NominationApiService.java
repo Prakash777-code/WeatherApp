@@ -1,4 +1,6 @@
-package com.example.mousam;
+package com.example.mousam.Api;
+
+import com.example.mousam.Models.LocationResponse;
 
 import java.util.List;
 import retrofit2.Call;

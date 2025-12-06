@@ -1,4 +1,6 @@
-package com.example.mousam;
+package com.example.mousam.Utils;
+
+import com.example.mousam.R;
 
 public class WeatherIconHelper {
     public static int getWeatherIcon(int code){

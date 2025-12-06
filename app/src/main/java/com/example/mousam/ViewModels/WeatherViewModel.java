@@ -1,8 +1,12 @@
-package com.example.mousam;
+package com.example.mousam.ViewModels;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
+import com.example.mousam.Models.HourlyForecast;
+import com.example.mousam.Models.WeatherResponse;
+import com.example.mousam.Repository.WeatherRepository;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

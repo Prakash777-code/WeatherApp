@@ -1,4 +1,6 @@
-package com.example.mousam;
+package com.example.mousam.Api;
+
+import com.example.mousam.Models.WeatherResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

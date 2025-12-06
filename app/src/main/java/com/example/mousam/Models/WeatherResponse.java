@@ -1,4 +1,4 @@
-package com.example.mousam;
+package com.example.mousam.Models;
 
 public class WeatherResponse {
     public CurrentWeather current_weather;

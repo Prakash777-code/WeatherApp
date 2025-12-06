@@ -1,6 +1,10 @@
-package com.example.mousam;
+package com.example.mousam.Repository;
 
 import androidx.lifecycle.MutableLiveData;
+
+import com.example.mousam.Models.LocationResponse;
+import com.example.mousam.Api.NominationApiService;
+
 import java.util.List;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;

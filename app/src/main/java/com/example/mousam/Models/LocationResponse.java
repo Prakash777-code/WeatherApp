@@ -1,4 +1,4 @@
-package com.example.mousam;
+package com.example.mousam.Models;
 
 import com.google.gson.annotations.SerializedName;
 

@@ -1,4 +1,4 @@
-package com.example.mousam;
+package com.example.mousam.Adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +7,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.mousam.Models.HourlyForecast;
+import com.example.mousam.R;
 
 import java.util.ArrayList;
 import java.util.List;

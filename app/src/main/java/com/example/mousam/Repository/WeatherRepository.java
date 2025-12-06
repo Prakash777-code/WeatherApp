@@ -1,6 +1,11 @@
-package com.example.mousam;
+package com.example.mousam.Repository;
 
 import androidx.lifecycle.MutableLiveData;
+
+import com.example.mousam.Models.WeatherResponse;
+import com.example.mousam.Api.RetrofitClient;
+import com.example.mousam.Api.WeatherApiService;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
