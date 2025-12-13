@@ -1,10 +1,10 @@
-package com.example.mousam.Utils;
+package com.example.mousam.utils;
 
 import com.example.mousam.R;
 
 public class WeatherIconHelper {
-    public static int getWeatherIcon(int code){
-        switch(code){
+    public static int getWeatherIcon(int code) {
+        switch (code) {
             case 0: return R.drawable.ic_sun_cloud;
             case 1: return R.drawable.ic_sun_cloud;
             case 2: return R.drawable.ic_cloudy;

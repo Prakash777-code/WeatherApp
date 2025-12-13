@@ -1,5 +1,9 @@
 package com.example.mousam.Adapter;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
+import android.content.Context;
+import android.net.NetworkInfo;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +47,8 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
 
         if (item.temp != null) holder.tempTv.setText(item.temp + "°C");
         else holder.tempTv.setText("N/A");
+
+
     }
 
     @Override
@@ -61,4 +67,5 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
             tempTv = itemView.findViewById(R.id.tempTv);
         }
     }
+
 }
