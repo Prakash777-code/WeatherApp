@@ -1,44 +1,34 @@
 package com.example.mousam.Repository;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.mousam.Models.LocationResponse;
 import com.example.mousam.Api.NominationApiService;
+import com.example.mousam.Api.RetrofitClient;
+import com.example.mousam.Models.LocationResponse;
 
 import java.util.List;
-import okhttp3.OkHttpClient;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CityRepository {
 
-    private NominationApiService apiService;
+    private final NominationApiService apiService;
 
     public CityRepository() {
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(chain -> chain.proceed(
-                        chain.request().newBuilder()
-                                .header("User-Agent", "MousamApp/1.0")
-                                .build()
-                ))
-                .build();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://nominatim.openstreetmap.org/")
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        apiService = retrofit.create(NominationApiService.class);
+        apiService = RetrofitClient
+                .getNominatimClient()
+                .create(NominationApiService.class);
     }
 
-    public void getLocation(String city, MutableLiveData<LocationResponse> liveData) {
+    public LiveData<LocationResponse> getLocation(String city) {
+        MutableLiveData<LocationResponse> liveData = new MutableLiveData<>();
+
         if (city == null || city.trim().isEmpty()) {
             liveData.postValue(null);
-            return;
+            return liveData;
         }
 
         Call<List<LocationResponse>> call = apiService.getLocation(city, "json");
@@ -57,5 +47,7 @@ public class CityRepository {
                 liveData.postValue(null);
             }
         });
+
+        return liveData;
     }
 }

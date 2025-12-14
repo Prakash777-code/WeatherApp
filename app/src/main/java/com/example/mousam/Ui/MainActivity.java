@@ -1,18 +1,12 @@
 package com.example.mousam.Ui;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,26 +16,25 @@ import com.example.mousam.Models.HourlyForecast;
 import com.example.mousam.Models.LocationResponse;
 import com.example.mousam.Models.WeatherResponse;
 import com.example.mousam.R;
-import com.example.mousam.Repository.CityRepository;
 import com.example.mousam.ViewModels.WeatherViewModel;
+import com.example.mousam.utils.NetworkUtils;
 import com.example.mousam.utils.WeatherIconHelper;
-
-
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private WeatherViewModel viewModel;
-    private TextView currentTempTv, cityStateTv, tempTv, humidityTv, windTv, sunriseTv, sunsetTv, tvError;
+
+    private TextView currentTempTv, cityStateTv, tempTv, humidityTv,
+            windTv, sunriseTv, sunsetTv, tvError;
     private ImageView tempIcon;
     private RecyclerView forecastRv;
     private ForecastAdapter adapter;
     private EditText cityInput;
     private Button searchBtn;
 
-    private CityRepository cityRepository = new CityRepository();
-    private MutableLiveData<LocationResponse> locationLiveData = new MutableLiveData<>();
+    private boolean isWeatherRequested = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
         initViews();
         setupRecycler();
+
         viewModel = new ViewModelProvider(this).get(WeatherViewModel.class);
 
         checkInternetOnStart();
@@ -77,98 +71,86 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupRecycler() {
         adapter = new ForecastAdapter();
-        forecastRv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        forecastRv.setLayoutManager(
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        );
         forecastRv.setAdapter(adapter);
     }
 
     private void checkInternetOnStart() {
-        if (!isInternetOn()) {
+        if (!NetworkUtils.isInternetAvailable(this)) {
             tvError.setText("Please check your internet connection!");
-            tvError.setVisibility(View.VISIBLE);
+            tvError.setVisibility(android.view.View.VISIBLE);
         } else {
-            tvError.setVisibility(View.GONE);
+            tvError.setVisibility(android.view.View.GONE);
         }
     }
 
     private void setupSearchButton() {
-        searchBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String city = cityInput.getText().toString().trim();
-                if (city.length() == 0) return;
+        searchBtn.setOnClickListener(v -> {
+            String city = cityInput.getText().toString().trim();
+            if (city.isEmpty()) return;
 
-                if (!isInternetOn()) {
-                    tvError.setText("No Internet");
-                    tvError.setVisibility(View.VISIBLE);
-                    clearText();
-                    return;
-                }
-
-                tvError.setVisibility(View.GONE);
-                cityRepository.getLocation(city, locationLiveData);
+            if (!NetworkUtils.isInternetAvailable(this)) {
+                tvError.setText("No Internet");
+                tvError.setVisibility(android.view.View.VISIBLE);
+                clearText();
+                return;
             }
+
+            tvError.setVisibility(android.view.View.GONE);
+            isWeatherRequested = false;
+
+
+            viewModel.searchCity(city);
         });
     }
 
     private void observeLocation() {
-        locationLiveData.observe(this, new Observer<LocationResponse>() {
-            @Override
-            public void onChanged(LocationResponse location) {
-                if (location != null && location.lat != null && location.lon != null) {
-                    try {
-                        double lat = Double.parseDouble(location.lat);
-                        double lon = Double.parseDouble(location.lon);
+        viewModel.getLocationLiveData().observe(this, location -> {
+            if (location == null || location.lat == null || location.lon == null) {
+                cityStateTv.setText("City not found");
+                return;
+            }
 
-                        viewModel.fetchWeather(lat, lon);
+            if (!NetworkUtils.isInternetAvailable(this)) {
+                tvError.setText("No Internet");
+                tvError.setVisibility(android.view.View.VISIBLE);
+                return;
+            }
 
-                        if (location.display_name != null) {
-                            cityStateTv.setText(location.display_name);
-                        } else {
-                            cityStateTv.setText("Unknown");
-                        }
+            try {
+                double lat = Double.parseDouble(location.lat);
+                double lon = Double.parseDouble(location.lon);
 
-                    } catch (Exception e) {
-                        cityStateTv.setText("Invalid coordinates");
-                    }
-                } else {
-                    cityStateTv.setText("City not found");
+                if (!isWeatherRequested) {
+                    isWeatherRequested = true;
+                    viewModel.fetchWeather(lat, lon);
                 }
+
+                cityStateTv.setText(location.display_name != null ? location.display_name : "Unknown");
+
+            } catch (Exception e) {
+                cityStateTv.setText("Invalid coordinates");
             }
         });
     }
 
     private void observeWeather() {
-        viewModel.getWeatherLiveData().observe(this, new Observer<WeatherResponse>() {
-            @Override
-            public void onChanged(WeatherResponse response) {
-                if (response != null) {
-                    updateUI(response);
-                }
-            }
+        viewModel.getWeatherLiveData().observe(this, response -> {
+            if (response != null) updateUI(response);
         });
     }
 
     private void observeForecast() {
-        viewModel.getForecastLiveData().observe(this, new Observer<List<HourlyForecast>>() {
-            @Override
-            public void onChanged(List<HourlyForecast> list) {
-                if (list != null && list.size() > 0) {
-                    adapter.setForecast(list);
-                }
-            }
+        viewModel.getForecastLiveData().observe(this, list -> {
+            if (list != null && !list.isEmpty()) adapter.setForecast(list);
         });
     }
 
     private void observeHumidity() {
-        viewModel.getHumidityLiveData().observe(this, new Observer<Double>() {
-            @Override
-            public void onChanged(Double h) {
-                if (h != null) {
-                    humidityTv.setText(h.intValue() + "%");
-                } else {
-                    humidityTv.setText("N/A");
-                }
-            }
+        viewModel.getHumidityLiveData().observe(this, h -> {
+            humidityTv.setText(h != null ? h.intValue() + "%" : "N/A");
         });
     }
 
@@ -182,44 +164,30 @@ public class MainActivity extends AppCompatActivity {
                 tempTv.setText("Temp: N/A");
             }
 
-            if (response.current_weather.windSpeed != null) {
-                windTv.setText(response.current_weather.windSpeed + " km/h");
-            } else {
-                windTv.setText("Wind: N/A");
-            }
+            windTv.setText(response.current_weather.windSpeed != null
+                    ? response.current_weather.windSpeed + " km/h"
+                    : "Wind: N/A");
 
-            int code = 0;
-            if (response.current_weather.weatherCode != null) {
-                try {
-                    code = response.current_weather.weatherCode;
-                } catch (Exception ignored) {}
-            }
+            int code = response.current_weather.weatherCode != null
+                    ? response.current_weather.weatherCode
+                    : 0;
+
             tempIcon.setImageResource(WeatherIconHelper.getWeatherIcon(code));
         }
 
         if (response.daily != null) {
-            if (response.daily.sunrise != null && response.daily.sunrise.size() > 0) {
-                sunriseTv.setText(response.daily.sunrise.get(0).substring(11, 16));
-            } else {
-                sunriseTv.setText("Sunrise: N/A");
+            if (response.daily.sunrise != null && !response.daily.sunrise.isEmpty()) {
+                String sunrise = response.daily.sunrise.get(0);
+                if (sunrise.length() >= 16) sunriseTv.setText(sunrise.substring(11, 16));
             }
-
-            if (response.daily.sunset != null && response.daily.sunset.size() > 0) {
-                sunsetTv.setText(response.daily.sunset.get(0).substring(11, 16));
-            } else {
-                sunsetTv.setText("Sunset: N/A");
+            if (response.daily.sunset != null && !response.daily.sunset.isEmpty()) {
+                String sunset = response.daily.sunset.get(0);
+                if (sunset.length() >= 16) sunsetTv.setText(sunset.substring(11, 16));
             }
         }
     }
 
-    public boolean isInternetOn() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (cm == null) return false;
-        NetworkInfo info = cm.getActiveNetworkInfo();
-        return info != null && info.isConnected();
-    }
-
-    public void clearText() {
+    private void clearText() {
         cityStateTv.setText("");
         currentTempTv.setText("");
         tempTv.setText("");

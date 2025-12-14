@@ -1,3 +1,27 @@
 <resources>
+
     <string name="app_name">Mousam</string>
+
+
+    <string name="hint_search_city">Search city</string>
+    <string name="btn_go">GO</string>
+
+
+    <string name="label_temp">Temp</string>
+    <string name="label_temp_short">Temp</string>
+    <string name="label_humidity">Humidity</string>
+    <string name="label_wind">Wind</string>
+
+
+    <string name="label_sunrise">Sunrise</string>
+    <string name="label_sunset">Sunset</string>
+
+
+    <string name="label_next_4_hours">Next 4 hours</string>
+
+
+    <string name="label_time">Time</string>
+
+
+    <string name="desc_weather_icon">Weather icon</string>
 </resources>

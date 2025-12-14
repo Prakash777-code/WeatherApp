@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:padding="8dp"
     android:layout_margin="4dp"
-    android:background="@drawable/bg_gradient"
+    android:background="@drawable/bg_gradient_rounded"
     android:gravity="center"
     android:elevation="2dp"
     android:clipChildren="false"
@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:text="Time"
         android:textSize="16sp"
-        android:textColor="@android:color/white"
+        android:textColor="@color/black"
         android:gravity="center"/>
 
     <TextView
@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:text="Temp"
         android:textSize="18sp"
-        android:textColor="@android:color/white"
+        android:textColor="@color/black"
         android:layout_marginTop="4dp"
         android:gravity="center"/>
 </LinearLayout>

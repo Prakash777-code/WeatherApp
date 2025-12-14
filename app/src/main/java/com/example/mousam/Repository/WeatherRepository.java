@@ -18,13 +18,13 @@ public class WeatherRepository {
 
     public WeatherRepository() {
         apiService = RetrofitClient
-                .getInstance(ApiConstants.BASE_URL)
+                .getWeatherClient()
                 .create(WeatherApiService.class);
     }
 
     public LiveData<WeatherResponse> getWeather(double lat, double lon) {
 
-        MutableLiveData<WeatherResponse> liveData = new MutableLiveData<>();
+        final MutableLiveData<WeatherResponse> liveData = new MutableLiveData<>();
 
         Call<WeatherResponse> call = apiService.getWeather(
                 lat,
